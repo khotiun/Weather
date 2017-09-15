@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item_place_cv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/item_rl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/city_btn_search_city"
+        android:background="@color/accent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin">
+
+        <TextView
+            android:id="@+id/item_tv_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="friday"/>
+
+        <TextView
+            android:id="@+id/item_tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_day"
+            tools:text="15/09"/>
+
+        <TextView
+            android:id="@+id/item_tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_date"
+            tools:text="15:00"/>
+
+        <ImageView
+            android:id="@+id/item_iv"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/item_tv_time"/>
+
+        <TextView
+            android:id="@+id/item_tv_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_day"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/item_iv"
+            tools:text="broken clouds"/>
+
+        <TextView
+            android:id="@+id/item_tv_temp_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/item_tv_date"
+            android:layout_alignParentRight="true"
+            tools:text="13"/>
+
+        <TextView
+            android:id="@+id/item_tv_temp_min_str"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/item_tv_date"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/item_tv_temp_min"
+            android:text="temp min"/>
+
+        <TextView
+            android:id="@+id/item_tv_temp_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/item_tv_date"
+            tools:text="27"/>
+
+        <TextView
+            android:id="@+id/item_tv_temp_max_str"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/item_tv_date"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/item_tv_temp_max"
+            android:text="temp max"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_gravity="bottom"
+        android:background="@color/primary"/>
+
+</android.support.v7.widget.CardView>
