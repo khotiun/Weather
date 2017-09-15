@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main_coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.khotiun.android.weather.MainActivity">
+    android:layout_height="match_parent">
 
-   <EditText
-       android:id="@+id/activity_main_et_city"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/activity_main_btn_search_city"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/activity_main_et_city"
-        android:text="show weather"/>
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
-        android:id="@+id/activity_main_tv"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:layout_scrollFlags="scroll|enterAlways"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/accent"
+            app:tabGravity="fill"
+            app:tabMode="fixed"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/activity_main_btn_search_city"/>
+        android:layout_height="match_parent"/>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

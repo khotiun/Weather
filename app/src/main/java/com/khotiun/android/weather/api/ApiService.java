@@ -1,4 +1,4 @@
-package com.khotiun.android.weather;
+package com.khotiun.android.weather.api;
 
 import com.khotiun.android.weather.model.WeatherData;
 

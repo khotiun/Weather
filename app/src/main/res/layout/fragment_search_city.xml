@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/fragment_cearch_city_til"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="112dp">
+
+        <EditText
+            android:id="@+id/fragment_cearch_city_et_city"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Enter the name of the city"
+            android:textColorHint="@color/secondary_text"
+            android:textSize="16sp"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/fragment_cearch_city_btn_search_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_cearch_city_til"
+        android:text="show weather"/>
+
+    <TextView
+        android:id="@+id/fragment_cearch_city_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_cearch_city_btn_search_city"/>
+
+</RelativeLayout>

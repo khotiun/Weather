@@ -1,4 +1,4 @@
-package com.khotiun.android.weather;
+package com.khotiun.android.weather.utils;
 
 /**
  * Created by hotun on 14.09.2017.

@@ -1,6 +1,8 @@
-package com.khotiun.android.weather;
+package com.khotiun.android.weather.api;
 
 import android.support.annotation.NonNull;
+
+import com.khotiun.android.weather.utils.Config;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
