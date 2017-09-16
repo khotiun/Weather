@@ -1,4 +1,4 @@
-package com.khotiun.android.weather;
+package com.khotiun.android.weather.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

@@ -7,8 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.khotiun.android.weather.R;
-import com.khotiun.android.weather.SearchCityFragment;
-import com.khotiun.android.weather.ViewPagerAdapter;
+import com.khotiun.android.weather.fragment.ListCityFragment;
+import com.khotiun.android.weather.fragment.SearchCityFragment;
+import com.khotiun.android.weather.adapter.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new SearchCityFragment(), getString(R.string.city_cearch));
-        adapter.addFragment(new SearchCityFragment(), "Favorite cities");
+        adapter.addFragment(SearchCityFragment.newInstance(), getString(R.string.city_cearch));
+        adapter.addFragment(ListCityFragment.newInstance(), getString(R.string.favorite_city));
         viewPager.setAdapter(adapter);
     }
 }
