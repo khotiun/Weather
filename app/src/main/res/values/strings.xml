@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="city_cearch">City search</string>
+    <string name="city_cearch">search cities</string>
     <string name="favorite_city">Favorite cities</string>
+    <string name="enter_name_of_city">Enter city name</string>
+    <string name="temp_max">max</string>
+    <string name="temp_min">min</string>
 </resources>
