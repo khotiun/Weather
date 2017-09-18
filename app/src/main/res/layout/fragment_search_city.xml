@@ -11,6 +11,7 @@
         android:layout_width="54dp"
         android:layout_height="54dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/standart_margin"
         android:background="@color/accent"
         android:src="@drawable/ic_search"/>
 
@@ -19,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/city_ibtn_search_city"
+        android:layout_marginTop="@dimen/standart_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin">
 
         <EditText
@@ -67,6 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/standart_margin"
             android:src="@drawable/ic_star_border_white"/>
 
     </android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,6 @@
 package com.khotiun.android.weather.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -40,6 +43,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.khotiun.android.weather.model.CityNameLab.getCityNameLab;
+
 /**
  * Created by hotun on 15.09.2017.
  */
@@ -57,6 +62,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     private TextInputLayout mTextInputLayout;
     private WeatherAdapter mAdapter;
     private WeatherData mWeatherData;
+    private boolean isFaforiteCity = false;
 
     public static Fragment newInstance() {
         return new SearchCityFragment();
@@ -108,6 +114,9 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 mTextInputLayout.setError(getResources().getString(R.string.enter_name_of_city));
                 return;
             }
+            //Hide keyboard
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
             ApiService api = RetroClient.getApiService();
             Call<WeatherData> call = api.getWeather(mEtCity.getText().toString(), Config.API_KEY);
             //enqueue for asynchronously
@@ -118,11 +127,20 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                     mRelativeLayout.setVisibility(View.VISIBLE);
                     mWeatherData = response.body();
                     if (mWeatherData == null) {
-                        Snackbar.make(mCoordinatorLayout, "Incorrect city name", Snackbar.LENGTH_LONG).show();
+                        mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
                         return;
                     }
-                    mCoordinatorLayout.setVisibility(View.VISIBLE);
+                    isFaforiteCity = false;
                     mTvCityName.setText(mWeatherData.getCity().getName());
+                    mFab.setImageResource(R.drawable.ic_star_border_white);
+                    List<CityName> cityNames = CityNameLab.getCityNameLab(getActivity()).getCityNames();
+                    for (CityName city : cityNames) {
+                        if (city.getName().equals(mTvCityName.getText().toString())) {
+                            mFab.setImageResource(R.drawable.ic_star_filt);
+                            isFaforiteCity = true;
+                        }
+                    }
+                    mCoordinatorLayout.setVisibility(View.VISIBLE);
                     mAdapter = new WeatherAdapter(mWeatherData.getList());
                     mRecyclerView.setAdapter(mAdapter);
                 }
@@ -133,9 +151,13 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 }
             });
         } else if (viewId == R.id.city_fab) {
-            Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mTvCityName.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
-                    .setAction("yes", snackbarOnClickListener);
-            snackbar.show();
+            if (!isFaforiteCity) {
+                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mTvCityName.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
+                        .setAction("yes", snackbarOnClickListener);
+                snackbar.show();
+            } else {
+                Snackbar.make(mCoordinatorLayout, R.string.this_city_is_already_added_to_favorites, Snackbar.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -143,9 +165,9 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
         @Override
         public void onClick(View view) {
             CityName cityName = new CityName(mTvCityName.getText().toString());
-            CityNameLab.getCityNameLab(getActivity()).addCityName(cityName);
+            getCityNameLab(getActivity()).addCityName(cityName);
             mFab.setImageResource(R.drawable.ic_star_filt);
-            Log.d(TAG, CityNameLab.getCityNameLab(getActivity()).getCityNames().size() + "");
+            Log.d(TAG, getCityNameLab(getActivity()).getCityNames().size() + "");
 
         }
     };
@@ -200,7 +222,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
         private String convertDay(String oldDateString) {
 
             SimpleDateFormat oldDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newDayFormat = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+            SimpleDateFormat newDayFormat = new SimpleDateFormat("E", Locale.ENGLISH);
 
             Date date = null;
             try {
