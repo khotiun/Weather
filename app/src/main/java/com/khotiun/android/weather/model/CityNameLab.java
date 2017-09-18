@@ -10,7 +10,9 @@ import com.khotiun.android.weather.database.WeatherCursorWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static android.R.attr.id;
 import static com.khotiun.android.weather.database.WeatherDbSchema.WeatherTable;
 
 
@@ -33,12 +35,11 @@ public class CityNameLab {
 
     private CityNameLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new WeatherBaseHelper(mContext).getWritableDatabase();//получить базу данных для записи
+        mDatabase = new WeatherBaseHelper(mContext).getWritableDatabase();//get bd for write
     }
 
     public void addCityName(CityName c) {
         ContentValues values = getContentValues(c);
-
         mDatabase.insert(WeatherTable.NAME, null, values);
     }
 
@@ -67,8 +68,8 @@ public class CityNameLab {
 
         return values;
     }
-
-    private WeatherCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {//чтение с базы данных
+    //read bd
+    private WeatherCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 WeatherTable.NAME,
                 null, // Columns - null select all columns
@@ -80,5 +81,9 @@ public class CityNameLab {
         );
 
         return new WeatherCursorWrapper(cursor);
+    }
+
+    public void deleteCityName(CityName c) {
+        mDatabase.delete(WeatherTable.NAME, WeatherTable.Cols.CITY + " = ?",  new String[]{c.getName()});
     }
 }

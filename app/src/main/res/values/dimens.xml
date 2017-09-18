@@ -6,6 +6,6 @@
     <dimen name="title">24sp</dimen>
     <dimen name="divider_height">1dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="card_padding">4dp</dimen>
+    <dimen name="card_padding">8dp</dimen>
     <dimen name="standart_margin">8dp</dimen>
 </resources>

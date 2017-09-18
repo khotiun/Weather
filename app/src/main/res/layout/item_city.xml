@@ -1,19 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/item_city_iv"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_city"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/card_padding"
+        android:paddingTop="@dimen/card_padding">
 
-    <TextView
-        android:id="@+id/item_city_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/title"/>
+        <ImageView
+            android:id="@+id/item_city_iv"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_city"/>
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/item_city_ib_delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@color/accent"
+            android:src="@drawable/ic_delete"/>
+
+        <TextView
+            android:id="@+id/item_city_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/title"
+            android:gravity="center"/>
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_gravity="bottom"
+        android:background="@color/colorView"/>
+
+</android.support.v7.widget.CardView>

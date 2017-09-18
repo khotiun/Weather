@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ public class ListCityFragment extends Fragment {
     private static String TAG = "ListCityFragment";
     private RecyclerView mCityRecyclerView;
     private CityAdapter mAdapter;
+    private List<CityName> mList;
 
     public static Fragment newInstance() {
         return new ListCityFragment();
@@ -37,14 +39,15 @@ public class ListCityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list_city, container, false);
         mCityRecyclerView = (RecyclerView) view.findViewById(R.id.list_city_rv);
         mCityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new CityAdapter(CityNameLab.getCityNameLab(getActivity()).getCityNames());
+        mList = CityNameLab.getCityNameLab(getActivity()).getCityNames();
+        mAdapter = new CityAdapter(mList);
         mCityRecyclerView.setAdapter(mAdapter);
         return view;
     }
 
     private class CityHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView mCityImageView;
+        private ImageButton mImDeleteCity;
         private TextView mNameTextView;
         private CityName mCityName;
 
@@ -58,12 +61,19 @@ public class ListCityFragment extends Fragment {
             super(itemView);
             itemView.setOnClickListener(this);
             mNameTextView = (TextView) itemView.findViewById(R.id.item_city_tv);
+            mImDeleteCity = (ImageButton) itemView.findViewById(R.id.item_city_ib_delete);
+            mImDeleteCity.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
-
+            int id = v.getId();
+            if(id == R.id.item_city_ib_delete){
+                mList.remove(mCityName);
+                CityNameLab.getCityNameLab(getActivity()).deleteCityName(mCityName);
+                mAdapter.notifyDataSetChanged();
+            }
         }
     }
 
