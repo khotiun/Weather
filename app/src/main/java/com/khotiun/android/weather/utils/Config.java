@@ -8,5 +8,5 @@ public class Config {
 
     public static final String ROOT_URL = "http://api.openweathermap.org/";
     public static final String API_KEY = "d2a6b21c943e38d9e44edcc03c9912ad";
-    public static final String URL_WEATHER = "http://openweathermap.org/img/w/";
+    public static final String URL_PICTURE = "http://openweathermap.org/img/w/";
 }

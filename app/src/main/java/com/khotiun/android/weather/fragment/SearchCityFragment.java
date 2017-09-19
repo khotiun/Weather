@@ -2,7 +2,6 @@ package com.khotiun.android.weather.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -88,7 +87,11 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        someEventListener = (OnSomeEventListener) context;
+        try {
+            someEventListener = (OnSomeEventListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnSomeEventListener");
+        }
     }
 
     @Override
@@ -129,43 +132,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     public void onClick(View v) {
         int viewId = v.getId();
         if (viewId == R.id.city_ibtn_search_city) {
-            if (mEtCity.getText().toString().equals("")) {
-                mTextInputLayout.setError(getResources().getString(R.string.empty_field));
-                return;
-            }
-            checkingInternetConnection();
-            mProgressBar.setVisibility(View.VISIBLE);
-            //Hide keyboard
-            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
-            ApiService api = RetroClient.getApiService();
-            Call<WeatherData> call = api.getWeather(mEtCity.getText().toString(), Config.API_KEY);
-            //enqueue for asynchronously
-            call.enqueue(new Callback<WeatherData>() {
-                @Override
-                public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
-                    Log.d(TAG, "onResponse");
-                    mProgressBar.setVisibility(View.GONE);
-                    mWeatherData = response.body();
-                    if (mWeatherData == null) {
-                        mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
-                        return;
-                    }
-                    isFaforiteCity = false;
-                    mTvCityName.setText(mWeatherData.getCity().getName());
-                    mFab.setImageResource(R.drawable.ic_star_border_white);
-                    coincidenceCity();
-                    mCoordinatorLayout.setVisibility(View.VISIBLE);
-                    mAdapter = new WeatherAdapter(mWeatherData.getList());
-                    mRecyclerView.setAdapter(mAdapter);
-                }
-
-                @Override
-                public void onFailure(Call<WeatherData> call, Throwable t) {
-                    Log.d(TAG, "onFailure");
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            });
+            getResponse();
         } else if (viewId == R.id.city_fab) {
             coincidenceCity();
             if (!isFaforiteCity) {
@@ -177,6 +144,46 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             }
             isFaforiteCity = false;
         }
+    }
+
+    public void getResponse() {
+        if (mEtCity.getText().toString().equals("")) {
+            mTextInputLayout.setError(getResources().getString(R.string.empty_field));
+            return;
+        }
+        checkingInternetConnection();
+        mProgressBar.setVisibility(View.VISIBLE);
+        //Hide keyboard
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+        ApiService api = RetroClient.getApiService();
+        Call<WeatherData> call = api.getWeather(mEtCity.getText().toString(), Config.API_KEY);
+        //enqueue for asynchronously
+        call.enqueue(new Callback<WeatherData>() {
+            @Override
+            public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
+                Log.d(TAG, "onResponse");
+                mProgressBar.setVisibility(View.GONE);
+                mWeatherData = response.body();
+                if (mWeatherData == null) {
+                    mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
+                    return;
+                }
+                isFaforiteCity = false;
+                mTvCityName.setText(mWeatherData.getCity().getName());
+                mFab.setImageResource(R.drawable.ic_star_border_white);
+                coincidenceCity();
+                mCoordinatorLayout.setVisibility(View.VISIBLE);
+                mAdapter = new WeatherAdapter(mWeatherData.getList());
+                mRecyclerView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onFailure(Call<WeatherData> call, Throwable t) {
+                Log.d(TAG, "onFailure");
+                mProgressBar.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void checkingInternetConnection() {
@@ -262,7 +269,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             int tempMax = getTemp(dataWeather.getMain().getTempMax());
             tvTempMin.setText(tempMin + "°C");
             tvTempMax.setText(tempMax + "°C");
-            String urlWeather = Config.URL_WEATHER + dataWeather.getWeather().get(0).getIcon() + ".png";
+            String urlWeather = Config.URL_PICTURE + dataWeather.getWeather().get(0).getIcon() + ".png";
             setImage(urlWeather, ivWither);
 
         }

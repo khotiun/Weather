@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
 import com.khotiun.android.weather.fragment.ListCityFragment;
@@ -19,7 +21,7 @@ import com.khotiun.android.weather.utils.InternetConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SearchCityFragment.OnSomeEventListener {
+public class MainActivity extends AppCompatActivity implements SearchCityFragment.OnSomeEventListener, ListCityFragment.ListCityEventListener {
 
     private static final String TAG = "MainActivity";
     private Toolbar toolbar;
@@ -47,6 +49,14 @@ public class MainActivity extends AppCompatActivity implements SearchCityFragmen
         ListCityFragment fragListCity = (ListCityFragment) adapter.getItem(1);
         fragListCity.getAdapter().redrawAdapter(CityNameLab.getCityNameLab(this).getCityNames());
     }
+
+    @Override
+    public void listCityEvent(String city) {
+        SearchCityFragment fragSearchCity = (SearchCityFragment) adapter.getItem(0);
+        ((EditText) fragSearchCity.getView().findViewById(R.id.city_et_search)).setText(city);
+        fragSearchCity.getResponse();
+        viewPager.setCurrentItem(0);
+}
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());

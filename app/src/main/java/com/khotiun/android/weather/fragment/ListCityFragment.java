@@ -1,5 +1,7 @@
 package com.khotiun.android.weather.fragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,9 +29,24 @@ public class ListCityFragment extends Fragment {
     private RecyclerView mCityRecyclerView;
     private CityAdapter mAdapter;
     private List<CityName> mList;
+    private ListCityEventListener mListCityEventListener;
 
     public static Fragment newInstance() {
         return new ListCityFragment();
+    }
+
+    public interface ListCityEventListener {
+        public void listCityEvent(String city);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListCityEventListener = (ListCityEventListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement ListCityEventListener");
+        }
     }
 
     @Nullable
@@ -76,6 +93,9 @@ public class ListCityFragment extends Fragment {
                 mList.remove(mCityName);
                 CityNameLab.getCityNameLab(getActivity()).deleteCityName(mCityName);
                 mAdapter.notifyDataSetChanged();
+            } else if (id == R.id.item_city_card){
+                Log.d(TAG, "item");
+                mListCityEventListener.listCityEvent(mCityName.getName());
             }
         }
     }
