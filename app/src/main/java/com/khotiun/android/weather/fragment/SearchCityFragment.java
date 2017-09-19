@@ -1,6 +1,7 @@
 package com.khotiun.android.weather.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,15 +16,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
+import com.khotiun.android.weather.activity.MainActivity;
 import com.khotiun.android.weather.api.ApiService;
 import com.khotiun.android.weather.api.RetroClient;
 import com.khotiun.android.weather.model.CityName;
@@ -60,9 +62,11 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     private CoordinatorLayout mCoordinatorLayout;
     private FloatingActionButton mFab;
     private TextInputLayout mTextInputLayout;
+    private ProgressBar mProgressBar;
     private WeatherAdapter mAdapter;
     private WeatherData mWeatherData;
     private boolean isFaforiteCity = false;
+    private OnSomeEventListener someEventListener;
 
     public static Fragment newInstance() {
         return new SearchCityFragment();
@@ -71,11 +75,27 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+    }
+
+    public interface OnSomeEventListener {
+        public void someEvent();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            someEventListener = (OnSomeEventListener) context;
+        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_city, container, false);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.city_pb);
         mTextInputLayout = (TextInputLayout) view.findViewById(R.id.city_til);
         mRelativeLayout = (RelativeLayout) view.findViewById(R.id.city_rl);
         mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.city_coordinator_layout);
@@ -111,9 +131,10 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
         int viewId = v.getId();
         if (viewId == R.id.city_ibtn_search_city) {
             if (mEtCity.getText().toString().equals("")) {
-                mTextInputLayout.setError(getResources().getString(R.string.enter_name_of_city));
+                mTextInputLayout.setError(getResources().getString(R.string.empty_field));
                 return;
             }
+            mProgressBar.setVisibility(View.VISIBLE);
             //Hide keyboard
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
@@ -124,7 +145,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 @Override
                 public void onResponse(Call<WeatherData> call, Response<WeatherData> response) {
                     Log.d(TAG, "onResponse");
-                    mRelativeLayout.setVisibility(View.VISIBLE);
+                    mProgressBar.setVisibility(View.GONE);
                     mWeatherData = response.body();
                     if (mWeatherData == null) {
                         mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
@@ -133,13 +154,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                     isFaforiteCity = false;
                     mTvCityName.setText(mWeatherData.getCity().getName());
                     mFab.setImageResource(R.drawable.ic_star_border_white);
-                    List<CityName> cityNames = CityNameLab.getCityNameLab(getActivity()).getCityNames();
-                    for (CityName city : cityNames) {
-                        if (city.getName().equals(mTvCityName.getText().toString())) {
-                            mFab.setImageResource(R.drawable.ic_star_filt);
-                            isFaforiteCity = true;
-                        }
-                    }
+                  coincidenceCity();
                     mCoordinatorLayout.setVisibility(View.VISIBLE);
                     mAdapter = new WeatherAdapter(mWeatherData.getList());
                     mRecyclerView.setAdapter(mAdapter);
@@ -151,12 +166,24 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 }
             });
         } else if (viewId == R.id.city_fab) {
+            coincidenceCity();
             if (!isFaforiteCity) {
                 Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mTvCityName.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
                         .setAction("yes", snackbarOnClickListener);
                 snackbar.show();
             } else {
-                Snackbar.make(mCoordinatorLayout, R.string.this_city_is_already_added_to_favorites, Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mCoordinatorLayout, getResources().getString(R.string.this_city_is_already_added_to_favorites), Snackbar.LENGTH_SHORT).show();
+            }
+            isFaforiteCity = false;
+        }
+    }
+
+    private void coincidenceCity() {
+        List<CityName> cityNames = CityNameLab.getCityNameLab(getActivity()).getCityNames();
+        for (CityName city : cityNames) {
+            if (city.getName().equals(mTvCityName.getText().toString())) {
+                mFab.setImageResource(R.drawable.ic_star_filt);
+                isFaforiteCity = true;
             }
         }
     }
@@ -168,7 +195,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             getCityNameLab(getActivity()).addCityName(cityName);
             mFab.setImageResource(R.drawable.ic_star_filt);
             Log.d(TAG, getCityNameLab(getActivity()).getCityNames().size() + "");
-
+            someEventListener.someEvent();
         }
     };
 

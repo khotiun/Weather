@@ -8,21 +8,21 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/card_padding"
-        android:paddingTop="@dimen/card_padding">
+        android:paddingTop="@dimen/card_padding"
+        android:paddingBottom="@dimen/card_padding">
 
         <ImageView
             android:id="@+id/item_city_iv"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentLeft="true"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_city"/>
 
         <ImageButton
             android:id="@+id/item_city_ib_delete"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:background="@color/accent"

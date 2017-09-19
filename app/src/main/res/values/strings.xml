@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="city_cearch">search cities</string>
+    <string name="city_cearch">Search cities</string>
     <string name="favorite_city">Favorite cities</string>
     <string name="enter_name_of_city">Enter city name</string>
+    <string name="empty_field">Empty field</string>
     <string name="temp_max">Max:</string>
     <string name="temp_min">Min:</string>
     <string name="Incorrect_city_name">Incorrect city name</string>
-    <string name="this_city_is_already_added_to_favorites">this city is already added to favorites</string>
+    <string name="this_city_is_already_added_to_favorites">This city is already added to favorites</string>
 </resources>

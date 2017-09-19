@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
@@ -36,6 +35,7 @@ public class ListCityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_list_city, container, false);
         mCityRecyclerView = (RecyclerView) view.findViewById(R.id.list_city_rv);
         mCityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -43,6 +43,45 @@ public class ListCityFragment extends Fragment {
         mAdapter = new CityAdapter(mList);
         mCityRecyclerView.setAdapter(mAdapter);
         return view;
+    }
+
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "Fragment1 onStart");
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "Fragment1 onResume");
+    }
+
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "Fragment1 onPause");
+    }
+
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "Fragment1 onStop");
+    }
+
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "Fragment1 onDestroyView");
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Fragment1 onDestroy");
+    }
+
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "Fragment1 onDetach");
+    }
+
+    public CityAdapter getAdapter() {
+        return mAdapter;
     }
 
     private class CityHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,7 +108,8 @@ public class ListCityFragment extends Fragment {
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            if(id == R.id.item_city_ib_delete){
+            if (id == R.id.item_city_ib_delete) {
+                Log.d(TAG, "Delete city");
                 mList.remove(mCityName);
                 CityNameLab.getCityNameLab(getActivity()).deleteCityName(mCityName);
                 mAdapter.notifyDataSetChanged();
@@ -77,7 +117,7 @@ public class ListCityFragment extends Fragment {
         }
     }
 
-    private class CityAdapter extends RecyclerView.Adapter<CityHolder> {
+    public class CityAdapter extends RecyclerView.Adapter<CityHolder> {
 
         private List<CityName> mCityNames;
 
@@ -97,13 +137,19 @@ public class ListCityFragment extends Fragment {
         public void onBindViewHolder(CityHolder holder, int position) {//этот метод связывает представление View объекта ViewHolder с объектом модели. При вызове он получает ViewHolder
             // и позицию в наборе данных. Позиция используется для нахождения правильных данных модели, после чего View обновляется в соответствии с этими данными.
             CityName cityName = mCityNames.get(position);
-            Log.d(TAG, cityName.getName());
             holder.bindCity(cityName);
         }
 
         @Override
         public int getItemCount() {
             return mCityNames.size();
+        }
+
+        public void redrawAdapter(List<CityName> cityNames) {
+            mList = cityNames;
+            Log.d(TAG, mList.size() + "");
+            mAdapter = new CityAdapter(mList);
+            mCityRecyclerView.setAdapter(mAdapter);
         }
     }
 }

@@ -8,20 +8,23 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
 import com.khotiun.android.weather.fragment.ListCityFragment;
 import com.khotiun.android.weather.fragment.SearchCityFragment;
+import com.khotiun.android.weather.model.CityNameLab;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchCityFragment.OnSomeEventListener{
 
     private static final String TAG = "MainActivity";
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private ViewPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +41,14 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    @Override
+    public void someEvent() {
+        ListCityFragment fragListCity = (ListCityFragment) adapter.getItem(1);
+        fragListCity.getAdapter().redrawAdapter(CityNameLab.getCityNameLab(this).getCityNames());
+    }
+
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(SearchCityFragment.newInstance(), getString(R.string.city_cearch));
         adapter.addFragment(ListCityFragment.newInstance(), getString(R.string.favorite_city));
         viewPager.setAdapter(adapter);
@@ -74,7 +83,5 @@ public class MainActivity extends AppCompatActivity {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
-
-
     }
 }

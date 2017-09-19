@@ -8,10 +8,13 @@
 
     <ImageButton
         android:id="@+id/city_ibtn_search_city"
-        android:layout_width="54dp"
-        android:layout_height="54dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_alignTop="@+id/city_til"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/standart_margin"
+        android:layout_alignParentEnd="true"
         android:background="@color/accent"
         android:src="@drawable/ic_search"/>
 
@@ -73,5 +76,12 @@
             android:src="@drawable/ic_star_border_white"/>
 
     </android.support.design.widget.CoordinatorLayout>
+
+    <ProgressBar
+        android:id="@+id/city_pb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>
