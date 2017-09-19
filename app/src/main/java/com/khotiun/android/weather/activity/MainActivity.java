@@ -1,5 +1,6 @@
 package com.khotiun.android.weather.activity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -8,17 +9,17 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
 import com.khotiun.android.weather.fragment.ListCityFragment;
 import com.khotiun.android.weather.fragment.SearchCityFragment;
 import com.khotiun.android.weather.model.CityNameLab;
+import com.khotiun.android.weather.utils.InternetConnection;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SearchCityFragment.OnSomeEventListener{
+public class MainActivity extends AppCompatActivity implements SearchCityFragment.OnSomeEventListener {
 
     private static final String TAG = "MainActivity";
     private Toolbar toolbar;

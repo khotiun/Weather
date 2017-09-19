@@ -35,7 +35,6 @@ public class ListCityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_list_city, container, false);
         mCityRecyclerView = (RecyclerView) view.findViewById(R.id.list_city_rv);
         mCityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -43,41 +42,6 @@ public class ListCityFragment extends Fragment {
         mAdapter = new CityAdapter(mList);
         mCityRecyclerView.setAdapter(mAdapter);
         return view;
-    }
-
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "Fragment1 onStart");
-    }
-
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "Fragment1 onResume");
-    }
-
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "Fragment1 onPause");
-    }
-
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "Fragment1 onStop");
-    }
-
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "Fragment1 onDestroyView");
-    }
-
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "Fragment1 onDestroy");
-    }
-
-    public void onDetach() {
-        super.onDetach();
-        Log.d(TAG, "Fragment1 onDetach");
     }
 
     public CityAdapter getAdapter() {
@@ -102,7 +66,6 @@ public class ListCityFragment extends Fragment {
             mNameTextView = (TextView) itemView.findViewById(R.id.item_city_tv);
             mImDeleteCity = (ImageButton) itemView.findViewById(R.id.item_city_ib_delete);
             mImDeleteCity.setOnClickListener(this);
-
         }
 
         @Override
@@ -126,16 +89,14 @@ public class ListCityFragment extends Fragment {
         }
 
         @Override
-        public CityHolder onCreateViewHolder(ViewGroup parent, int viewType) {//вызывается виджетом RecyclerView, когда ему потребуется новое представление для отображения элемента.
-            // В этом методе мы создаем объект View и упаковываем его в ViewHolder. RecyclerView пока не ожидает,что представление будет связано с какими-либо данными.
+        public CityHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
             View view = layoutInflater.inflate(R.layout.item_city, parent, false);
             return new CityHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(CityHolder holder, int position) {//этот метод связывает представление View объекта ViewHolder с объектом модели. При вызове он получает ViewHolder
-            // и позицию в наборе данных. Позиция используется для нахождения правильных данных модели, после чего View обновляется в соответствии с этими данными.
+        public void onBindViewHolder(CityHolder holder, int position) {
             CityName cityName = mCityNames.get(position);
             holder.bindCity(cityName);
         }
@@ -147,9 +108,12 @@ public class ListCityFragment extends Fragment {
 
         public void redrawAdapter(List<CityName> cityNames) {
             mList = cityNames;
-            Log.d(TAG, mList.size() + "");
-            mAdapter = new CityAdapter(mList);
-            mCityRecyclerView.setAdapter(mAdapter);
+            mAdapter.setList(cityNames);
+        }
+
+        public void setList(List<CityName> cityNames) {
+            mCityNames = cityNames;
+            notifyDataSetChanged();
         }
     }
 }

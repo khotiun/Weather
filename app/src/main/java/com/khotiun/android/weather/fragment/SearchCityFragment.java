@@ -1,7 +1,10 @@
 package com.khotiun.android.weather.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -25,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
-import com.khotiun.android.weather.activity.MainActivity;
 import com.khotiun.android.weather.api.ApiService;
 import com.khotiun.android.weather.api.RetroClient;
 import com.khotiun.android.weather.model.CityName;
@@ -33,6 +35,7 @@ import com.khotiun.android.weather.model.CityNameLab;
 import com.khotiun.android.weather.model.ListWeather;
 import com.khotiun.android.weather.model.WeatherData;
 import com.khotiun.android.weather.utils.Config;
+import com.khotiun.android.weather.utils.InternetConnection;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -85,11 +88,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            someEventListener = (OnSomeEventListener) context;
-        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString() + " must implement onSomeEventListener");
-        }
+        someEventListener = (OnSomeEventListener) context;
     }
 
     @Override
@@ -134,6 +133,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 mTextInputLayout.setError(getResources().getString(R.string.empty_field));
                 return;
             }
+            checkingInternetConnection();
             mProgressBar.setVisibility(View.VISIBLE);
             //Hide keyboard
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -154,7 +154,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                     isFaforiteCity = false;
                     mTvCityName.setText(mWeatherData.getCity().getName());
                     mFab.setImageResource(R.drawable.ic_star_border_white);
-                  coincidenceCity();
+                    coincidenceCity();
                     mCoordinatorLayout.setVisibility(View.VISIBLE);
                     mAdapter = new WeatherAdapter(mWeatherData.getList());
                     mRecyclerView.setAdapter(mAdapter);
@@ -163,6 +163,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 @Override
                 public void onFailure(Call<WeatherData> call, Throwable t) {
                     Log.d(TAG, "onFailure");
+                    mProgressBar.setVisibility(View.GONE);
                 }
             });
         } else if (viewId == R.id.city_fab) {
@@ -175,6 +176,36 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                 Snackbar.make(mCoordinatorLayout, getResources().getString(R.string.this_city_is_already_added_to_favorites), Snackbar.LENGTH_SHORT).show();
             }
             isFaforiteCity = false;
+        }
+    }
+
+    private void checkingInternetConnection() {
+        if (!InternetConnection.checkConnection(getActivity().getApplicationContext())) {
+            final AlertDialog.Builder  dialog;
+            /**
+             * Progress Dialog for User Interaction
+             */
+            Log.d(TAG, "Internet");
+            dialog = new AlertDialog.Builder(getActivity());
+            dialog.setTitle(getString(R.string.can_not_connect_to_the_internet));
+            dialog.setMessage(getString(R.string.retry));
+            dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (InternetConnection.checkConnection(getActivity().getApplicationContext())){
+                        dialog.cancel();
+                    } else {
+                        checkingInternetConnection();
+                    }
+                }
+            });
+            dialog.setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    System.exit(0);
+                }
+            });
+            dialog.show();
         }
     }
 
