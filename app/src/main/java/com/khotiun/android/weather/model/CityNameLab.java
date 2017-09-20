@@ -68,6 +68,7 @@ public class CityNameLab {
 
         return values;
     }
+
     //read bd
     private WeatherCursorWrapper queryCrimes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
@@ -84,6 +85,6 @@ public class CityNameLab {
     }
 
     public void deleteCityName(CityName c) {
-        mDatabase.delete(WeatherTable.NAME, WeatherTable.Cols.CITY + " = ?",  new String[]{c.getName()});
+        mDatabase.delete(WeatherTable.NAME, WeatherTable.Cols.CITY + " = ?", new String[]{c.getName()});
     }
 }

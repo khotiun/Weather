@@ -21,6 +21,7 @@ public class RetroClient {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
+
     //Get API Service
     public static ApiService getApiService() {
         return getRetrofitInstance().create(ApiService.class);

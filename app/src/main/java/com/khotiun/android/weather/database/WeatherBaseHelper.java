@@ -26,6 +26,7 @@ public class WeatherBaseHelper extends SQLiteOpenHelper {
                 WeatherDbSchema.WeatherTable.Cols.CITY + ")"
         );
     }
+
     //upgrade db
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

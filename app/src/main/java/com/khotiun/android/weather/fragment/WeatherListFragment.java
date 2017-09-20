@@ -191,7 +191,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG, "onFailure");
                 mProgressBar.setVisibility(View.GONE);
 
-                if (!InternetConnection.checkConnection(getActivity().getApplicationContext())){
+                if (!InternetConnection.checkConnection(getActivity().getApplicationContext())) {
                     checkingInternetConnection();
                 } else {
                     onFailureDialog();
@@ -200,6 +200,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             }
         });
     }
+
     //dialog on failure server
     private void onFailureDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
