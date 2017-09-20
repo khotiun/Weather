@@ -13,16 +13,16 @@
         android:paddingBottom="@dimen/card_padding">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/size_picture"
+            android:layout_height="@dimen/size_picture"
             android:layout_alignParentLeft="true"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_city"/>
 
         <ImageButton
             android:id="@+id/item_city_delete"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/size_picture"
+            android:layout_height="@dimen/size_picture"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:background="@color/accent"
