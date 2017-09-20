@@ -15,4 +15,5 @@
     <string name="ok">Ok</string>
     <string name="warning">Warning</string>
     <string name="problems_connecting_to_the_server">problems connecting to the server</string>
+    <string name="celsius">°C</string>
 </resources>

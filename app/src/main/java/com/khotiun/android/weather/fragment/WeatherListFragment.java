@@ -27,7 +27,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
-import com.khotiun.android.weather.activity.MainActivity;
 import com.khotiun.android.weather.api.ApiService;
 import com.khotiun.android.weather.api.RetroClient;
 import com.khotiun.android.weather.model.CityName;
@@ -72,6 +71,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
 
     private WeatherData mWeatherData;
     private boolean isFaforiteCity = false;
+    private static final int TEMP_CELSIUS = 273;
 
     // for add favorite city
     private FavoriteCityEventListener someEventListener;
@@ -143,11 +143,11 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
         } else if (viewId == R.id.weather_add_to_favorite) {
             compareCity();
             if (!isFaforiteCity) {
-                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mCityNameView.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
-                        .setAction(getResources().getString(R.string.yes), snackbarOnClickListener);
+                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, String.format("Add %s to favorites?", mCityNameView.getText().toString()), Snackbar.LENGTH_LONG)
+                        .setAction(getString(R.string.yes), snackbarOnClickListener);
                 snackbar.show();
             } else {
-                Snackbar.make(mCoordinatorLayout, getResources().getString(R.string.this_city_is_already_added_to_favorites), Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(mCoordinatorLayout, getString(R.string.this_city_is_already_added_to_favorites), Snackbar.LENGTH_SHORT).show();
             }
             isFaforiteCity = false;
         }
@@ -156,7 +156,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
     //to receive a response from the server
     public void getResponse() {
         if (mEnterCityView.getText().toString().equals("")) {
-            mTextInputLayout.setError(getResources().getString(R.string.empty_field));
+            mTextInputLayout.setError(getString(R.string.empty_field));
 
             return;
         }
@@ -172,7 +172,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
                 mProgressBar.setVisibility(View.GONE);
                 mWeatherData = response.body();
                 if (mWeatherData == null) {
-                    mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
+                    mTextInputLayout.setError(getString(R.string.Incorrect_city_name));
 
                     return;
                 }
@@ -207,7 +207,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
         builder.setTitle(R.string.warning)
                 .setMessage(R.string.problems_connecting_to_the_server)
                 .setIcon(R.drawable.ic_disconect)
-                .setNegativeButton(getResources().getString(R.string.ok),
+                .setNegativeButton(getString(R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -272,7 +272,6 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             CityName cityName = new CityName(mCityNameView.getText().toString());
             getCityNameLab(getActivity()).addCityName(cityName);
             mAddCityView.setImageResource(R.drawable.ic_star_filt);
-            Log.d(TAG, getCityNameLab(getActivity()).getCityNames().size() + "");
             someEventListener.addCityEvent();
         }
     };
@@ -301,16 +300,18 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             String resultDay = convertDay(oldDateString);
             String resultDate = convertDate(oldDateString);
             String resultTime = convertTime(oldDateString);
+            String urlWeather = String.format("%s%s.png", Config.URL_PICTURE, dataWeather.getWeather().get(0).getIcon());
+            int tempMin = getTemp(dataWeather.getMain().getTempMin());
+            int tempMax = getTemp(dataWeather.getMain().getTempMax());
+
             mCityNameView.setText(mWeatherData.getCity().getName());
             mDayView.setText(resultDay);
             mDateView.setText(resultDate);
             mTimeView.setText(resultTime);
             mWiatherView.setText(dataWeather.getWeather().get(0).getDescription());
-            int tempMin = getTemp(dataWeather.getMain().getTempMin());
-            int tempMax = getTemp(dataWeather.getMain().getTempMax());
-            mTempMinView.setText(tempMin + "°C");
-            mTempMaxView.setText(tempMax + "°C");
-            String urlWeather = Config.URL_PICTURE + dataWeather.getWeather().get(0).getIcon() + ".png";
+            mTempMinView.setText(tempMin + getString(R.string.celsius));
+            mTempMaxView.setText(tempMax + getString(R.string.celsius));
+
             setImage(urlWeather, mPictureWitherView);
 
         }
@@ -322,7 +323,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
         }
 
         private int getTemp(double temp) {
-            return (int) Math.round(temp - 273);
+            return (int) Math.round(temp - TEMP_CELSIUS);
         }
 
         //get the day in the format Mon
