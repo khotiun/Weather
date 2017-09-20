@@ -5,6 +5,7 @@ package com.khotiun.android.weather.database;
  */
 
 public class WeatherDbSchema {
+
     //for define string constants
     public static final class WeatherTable {
         public static final String NAME = "weather";

@@ -1,6 +1,5 @@
 package com.khotiun.android.weather.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,17 +23,23 @@ import java.util.List;
  * Created by hotun on 16.09.2017.
  */
 
-public class ListCityFragment extends Fragment {
-    private static String TAG = "ListCityFragment";
+public class CityListFragment extends Fragment {
+
+    // TAG= class name prefix - just my way of logging
+    private static final String TAG = "CityListFragment";
+
     private RecyclerView mCityRecyclerView;
+
     private CityAdapter mAdapter;
+
     private List<CityName> mList;
     private ListCityEventListener mListCityEventListener;
 
     public static Fragment newInstance() {
-        return new ListCityFragment();
+        return new CityListFragment();
     }
 
+    // for show detail information city
     public interface ListCityEventListener {
         public void listCityEvent(String city);
     }
@@ -52,13 +57,19 @@ public class ListCityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list_city, container, false);
-        mCityRecyclerView = (RecyclerView) view.findViewById(R.id.list_city_rv);
+        return inflater.inflate(R.layout.fragment_city_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mCityRecyclerView = (RecyclerView) view.findViewById(R.id.list_city);
         mCityRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         mList = CityNameLab.getCityNameLab(getActivity()).getCityNames();
+
         mAdapter = new CityAdapter(mList);
         mCityRecyclerView.setAdapter(mAdapter);
-        return view;
     }
 
     public CityAdapter getAdapter() {
@@ -66,73 +77,77 @@ public class ListCityFragment extends Fragment {
     }
 
     private class CityHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageButton mDeleteCityView;
+        private TextView mNameView;
 
-        private ImageButton mImDeleteCity;
-        private TextView mNameTextView;
         private CityName mCityName;
 
         public void bindCity(CityName cityName) {
             mCityName = cityName;
-            mNameTextView.setText(cityName.getName());
+            mNameView.setText(cityName.getName());
 
         }
 
         public CityHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mNameTextView = (TextView) itemView.findViewById(R.id.item_city_tv);
-            mImDeleteCity = (ImageButton) itemView.findViewById(R.id.item_city_ib_delete);
-            mImDeleteCity.setOnClickListener(this);
+            mNameView = (TextView) itemView.findViewById(R.id.item_city_title);
+            mDeleteCityView = (ImageButton) itemView.findViewById(R.id.item_city_delete);
+            mDeleteCityView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int id = v.getId();
-            if (id == R.id.item_city_ib_delete) {
-                Log.d(TAG, "Delete city");
-                mList.remove(mCityName);
-                CityNameLab.getCityNameLab(getActivity()).deleteCityName(mCityName);
-                mAdapter.notifyDataSetChanged();
-            } else if (id == R.id.item_city_card){
+            if (id == R.id.item_city_delete) {
+                deleteCity();
+            } else if (id == R.id.item_city_card) {
                 Log.d(TAG, "item");
                 mListCityEventListener.listCityEvent(mCityName.getName());
             }
+        }
+
+        //delete a city from the list
+        private void deleteCity() {
+            Log.d(TAG, "Delete city");
+            mList.remove(mCityName);
+            CityNameLab.getCityNameLab(getActivity()).deleteCityName(mCityName);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
     public class CityAdapter extends RecyclerView.Adapter<CityHolder> {
 
-        private List<CityName> mCityNames;
+        private List<CityName> mCityList;
 
         public CityAdapter(List<CityName> cityNames) {
-            mCityNames = cityNames;
+            mCityList = cityNames;
         }
 
         @Override
         public CityHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View view = layoutInflater.inflate(R.layout.item_city, parent, false);
-            return new CityHolder(view);
+            return new CityHolder(LayoutInflater.from(getActivity()).inflate(R.layout.item_city, parent, false));
         }
 
         @Override
         public void onBindViewHolder(CityHolder holder, int position) {
-            CityName cityName = mCityNames.get(position);
+            CityName cityName = mCityList.get(position);
             holder.bindCity(cityName);
         }
 
         @Override
         public int getItemCount() {
-            return mCityNames.size();
+            return mCityList.size();
         }
 
+        // for redraw adapter with WeatherListFragment
         public void redrawAdapter(List<CityName> cityNames) {
             mList = cityNames;
             mAdapter.setList(cityNames);
         }
 
         public void setList(List<CityName> cityNames) {
-            mCityNames = cityNames;
+            mCityList = cityNames;
             notifyDataSetChanged();
         }
     }

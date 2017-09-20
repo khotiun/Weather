@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,7 +24,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
@@ -53,25 +53,30 @@ import static com.khotiun.android.weather.model.CityNameLab.getCityNameLab;
  * Created by hotun on 15.09.2017.
  */
 
-public class SearchCityFragment extends Fragment implements View.OnClickListener {
+public class WeatherListFragment extends Fragment implements View.OnClickListener {
 
-    private static final String TAG = "SearchCityFragment";
-    private EditText mEtCity;
-    private ImageButton mIBtnSearchCity;
-    private TextView mTvCityName;
-    private RelativeLayout mRelativeLayout;
+    // TAG= class name prefix - just my way of logging
+    private static final String TAG = "WeatherListFragment";
+
+    private EditText mEnterCityView;
+    private ImageButton mSearchCityView;
+    private TextView mCityNameView;
     private RecyclerView mRecyclerView;
+    private FloatingActionButton mAddCityView;
     private CoordinatorLayout mCoordinatorLayout;
-    private FloatingActionButton mFab;
     private TextInputLayout mTextInputLayout;
     private ProgressBar mProgressBar;
+
     private WeatherAdapter mAdapter;
+
     private WeatherData mWeatherData;
     private boolean isFaforiteCity = false;
-    private OnSomeEventListener someEventListener;
+
+    // for add favorite city
+    private FavoriteCityEventListener someEventListener;
 
     public static Fragment newInstance() {
-        return new SearchCityFragment();
+        return new WeatherListFragment();
     }
 
     @Override
@@ -80,39 +85,42 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
 
     }
 
-    public interface OnSomeEventListener {
-        public void someEvent();
+    public interface FavoriteCityEventListener {
+        public void addCityEvent();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            someEventListener = (OnSomeEventListener) context;
+            someEventListener = (FavoriteCityEventListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnSomeEventListener");
+            throw new ClassCastException(context.toString() + " must implement FavoriteCityEventListener");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search_city, container, false);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.city_pb);
-        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.city_til);
-        mRelativeLayout = (RelativeLayout) view.findViewById(R.id.city_rl);
-        mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.city_coordinator_layout);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.city_rv);
+        return inflater.inflate(R.layout.fragment_weather_list, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.weather_progress_bar);
+        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.weather_til);
+        mCoordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.weather_coordinator_layout);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.weather_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mTvCityName = (TextView) view.findViewById(R.id.city_tv_name);
-        mFab = (FloatingActionButton) view.findViewById(R.id.city_fab);
-        mFab.setOnClickListener(this);
-        mIBtnSearchCity = (ImageButton) view.findViewById(R.id.city_ibtn_search_city);
-        mIBtnSearchCity.setOnClickListener(this);
-        mEtCity = (EditText) view.findViewById(R.id.city_et_search);
-        mEtCity.addTextChangedListener(new TextWatcher() {
+        mCityNameView = (TextView) view.findViewById(R.id.weather_city_name);
+        mAddCityView = (FloatingActionButton) view.findViewById(R.id.weather_add_to_favorite);
+        mAddCityView.setOnClickListener(this);
+        mSearchCityView = (ImageButton) view.findViewById(R.id.weather_search);
+        mSearchCityView.setOnClickListener(this);
+        mEnterCityView = (EditText) view.findViewById(R.id.weather_enter_city);
+        mEnterCityView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -122,22 +130,20 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
-        return view;
     }
 
     @Override
     public void onClick(View v) {
         int viewId = v.getId();
-        if (viewId == R.id.city_ibtn_search_city) {
+        if (viewId == R.id.weather_search) {
             getResponse();
-        } else if (viewId == R.id.city_fab) {
-            coincidenceCity();
+        } else if (viewId == R.id.weather_add_to_favorite) {
+            compareCity();
             if (!isFaforiteCity) {
-                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mTvCityName.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
-                        .setAction("yes", snackbarOnClickListener);
+                Snackbar snackbar = Snackbar.make(mCoordinatorLayout, "Add " + mCityNameView.getText().toString() + " to favorites?", Snackbar.LENGTH_LONG)
+                        .setAction(getResources().getString(R.string.yes), snackbarOnClickListener);
                 snackbar.show();
             } else {
                 Snackbar.make(mCoordinatorLayout, getResources().getString(R.string.this_city_is_already_added_to_favorites), Snackbar.LENGTH_SHORT).show();
@@ -145,19 +151,17 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             isFaforiteCity = false;
         }
     }
-
+    //to receive a response from the server
     public void getResponse() {
-        if (mEtCity.getText().toString().equals("")) {
+        if (mEnterCityView.getText().toString().equals("")) {
             mTextInputLayout.setError(getResources().getString(R.string.empty_field));
             return;
         }
-        checkingInternetConnection();
         mProgressBar.setVisibility(View.VISIBLE);
-        //Hide keyboard
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+        checkingInternetConnection();
+        hideKeyboard();
         ApiService api = RetroClient.getApiService();
-        Call<WeatherData> call = api.getWeather(mEtCity.getText().toString(), Config.API_KEY);
+        Call<WeatherData> call = api.getWeather(mEnterCityView.getText().toString(), Config.API_KEY);
         //enqueue for asynchronously
         call.enqueue(new Callback<WeatherData>() {
             @Override
@@ -170,10 +174,11 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
                     return;
                 }
                 isFaforiteCity = false;
-                mTvCityName.setText(mWeatherData.getCity().getName());
-                mFab.setImageResource(R.drawable.ic_star_border_white);
-                coincidenceCity();
+                mCityNameView.setText(mWeatherData.getCity().getName());
+                mAddCityView.setImageResource(R.drawable.ic_star_border_white);
+                compareCity();
                 mCoordinatorLayout.setVisibility(View.VISIBLE);
+
                 mAdapter = new WeatherAdapter(mWeatherData.getList());
                 mRecyclerView.setAdapter(mAdapter);
             }
@@ -186,12 +191,18 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
         });
     }
 
+    //Hide keyboard
+    private void hideKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+    }
+
+    //Internet connection check
     private void checkingInternetConnection() {
         if (!InternetConnection.checkConnection(getActivity().getApplicationContext())) {
-            final AlertDialog.Builder  dialog;
-            /**
-             * Progress Dialog for User Interaction
-             */
+            final AlertDialog.Builder dialog;
+
+            //Alert Dialog for User Interaction
             Log.d(TAG, "Internet");
             dialog = new AlertDialog.Builder(getActivity());
             dialog.setTitle(getString(R.string.can_not_connect_to_the_internet));
@@ -199,7 +210,7 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (InternetConnection.checkConnection(getActivity().getApplicationContext())){
+                    if (InternetConnection.checkConnection(getActivity().getApplicationContext())) {
                         dialog.cancel();
                     } else {
                         checkingInternetConnection();
@@ -216,61 +227,64 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
         }
     }
 
-    private void coincidenceCity() {
+    //Find the coincidence of cities if a match is found to change the icon fab
+    private void compareCity() {
         List<CityName> cityNames = CityNameLab.getCityNameLab(getActivity()).getCityNames();
         for (CityName city : cityNames) {
-            if (city.getName().equals(mTvCityName.getText().toString())) {
-                mFab.setImageResource(R.drawable.ic_star_filt);
+            if (city.getName().equals(mCityNameView.getText().toString())) {
+                mAddCityView.setImageResource(R.drawable.ic_star_filt);
                 isFaforiteCity = true;
             }
         }
     }
 
+    //snackbar listener
     View.OnClickListener snackbarOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            CityName cityName = new CityName(mTvCityName.getText().toString());
+            CityName cityName = new CityName(mCityNameView.getText().toString());
             getCityNameLab(getActivity()).addCityName(cityName);
-            mFab.setImageResource(R.drawable.ic_star_filt);
+            mAddCityView.setImageResource(R.drawable.ic_star_filt);
             Log.d(TAG, getCityNameLab(getActivity()).getCityNames().size() + "");
-            someEventListener.someEvent();
+            someEventListener.addCityEvent();
         }
     };
 
-
     private class WeatherHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvDay, tvDayMounth, tvTime, tvWiather, tvTempMin, tvTempMax;
-        private ImageView ivWither;
+        private TextView mDayView, mDateView, mTimeView, mWiatherView, mTempMinView, mTempMaxView;
+        private ImageView mPictureWitherView;
+
+        private SimpleDateFormat mOldTimeFormat, mNewTimeFormat;
+        private Date mDate;
 
         public WeatherHolder(View itemView) {
             super(itemView);
-            tvDay = (TextView) itemView.findViewById(R.id.item_tv_day);
-            tvDayMounth = (TextView) itemView.findViewById(R.id.item_tv_date);
-            tvTime = (TextView) itemView.findViewById(R.id.item_tv_time);
-            tvWiather = (TextView) itemView.findViewById(R.id.item_tv_weather);
-            tvTempMin = (TextView) itemView.findViewById(R.id.item_tv_temp_min);
-            tvTempMax = (TextView) itemView.findViewById(R.id.item_tv_temp_max);
-            ivWither = (ImageView) itemView.findViewById(R.id.item_iv);
+            mDayView = (TextView) itemView.findViewById(R.id.item_weather_day);
+            mDateView = (TextView) itemView.findViewById(R.id.item_weather_date);
+            mTimeView = (TextView) itemView.findViewById(R.id.item_weather_time);
+            mWiatherView = (TextView) itemView.findViewById(R.id.item_weather_sky);
+            mTempMinView = (TextView) itemView.findViewById(R.id.item_weather_temp_min);
+            mTempMaxView = (TextView) itemView.findViewById(R.id.item_weather_temp_max);
+            mPictureWitherView = (ImageView) itemView.findViewById(R.id.item_weather_picture);
         }
 
         public void bindDataWeather(ListWeather dataWeather) {
-
             String oldDateString = dataWeather.getDtTxt();
             String resultDay = convertDay(oldDateString);
             String resultDate = convertDate(oldDateString);
             String resultTime = convertTime(oldDateString);
-            mTvCityName.setText(mWeatherData.getCity().getName());
-            tvDay.setText(resultDay);
-            tvDayMounth.setText(resultDate);
-            tvTime.setText(resultTime);
-            tvWiather.setText(dataWeather.getWeather().get(0).getDescription());
+            mCityNameView.setText(mWeatherData.getCity().getName());
+            mDayView.setText(resultDay);
+            mDateView.setText(resultDate);
+            mTimeView.setText(resultTime);
+            mWiatherView.setText(dataWeather.getWeather().get(0).getDescription());
             int tempMin = getTemp(dataWeather.getMain().getTempMin());
             int tempMax = getTemp(dataWeather.getMain().getTempMax());
-            tvTempMin.setText(tempMin + "°C");
-            tvTempMax.setText(tempMax + "°C");
+            mTempMinView.setText(tempMin + "°C");
+            mTempMaxView.setText(tempMax + "°C");
             String urlWeather = Config.URL_PICTURE + dataWeather.getWeather().get(0).getIcon() + ".png";
-            setImage(urlWeather, ivWither);
+            setImage(urlWeather, mPictureWitherView);
 
         }
 
@@ -284,81 +298,76 @@ public class SearchCityFragment extends Fragment implements View.OnClickListener
             return (int) Math.round(temp - 273);
         }
 
+        //get the day in the format Mon
         private String convertDay(String oldDateString) {
+            mOldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            mNewTimeFormat = new SimpleDateFormat("E", Locale.ENGLISH);
+            mDate = null;
 
-            SimpleDateFormat oldDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newDayFormat = new SimpleDateFormat("E", Locale.ENGLISH);
-
-            Date date = null;
             try {
-                date = oldDateFormat.parse(oldDateString);
+                mDate = mOldTimeFormat.parse(oldDateString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String resultDay = newDayFormat.format(date);
+            String resultDay = mNewTimeFormat.format(mDate);
 
             return resultDay;
         }
 
+        //get the date in the format dd/MM
         private String convertDate(String oldDateString) {
+            mOldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            mNewTimeFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
+            mDate = null;
 
-            SimpleDateFormat oldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newTimeFormat = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
-
-            Date time = null;
             try {
-                time = oldTimeFormat.parse(oldDateString);
+                mDate = mOldTimeFormat.parse(oldDateString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String resultTime = newTimeFormat.format(time);
+            String resultTime = mNewTimeFormat.format(mDate);
 
             return resultTime;
         }
-
+        //get the time in the format HH:mm
         private String convertTime(String oldDateString) {
+            mOldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            mNewTimeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+            mDate = null;
 
-            SimpleDateFormat oldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newTimeFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-
-            Date time = null;
             try {
-                time = oldTimeFormat.parse(oldDateString);
+                mDate = mOldTimeFormat.parse(oldDateString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String resultTime = newTimeFormat.format(time);
+            String resultTime = mNewTimeFormat.format(mDate);
 
             return resultTime;
         }
-
-
     }
 
     private class WeatherAdapter extends RecyclerView.Adapter<WeatherHolder> {
 
-        private List<ListWeather> mListWeathers;
+        private List<ListWeather> mWeatherList;
 
         public WeatherAdapter(List<ListWeather> listWeathers) {
-            mListWeathers = listWeathers;
+            mWeatherList = listWeathers;
         }
 
         @Override
         public WeatherHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View view = layoutInflater.inflate(R.layout.item_weather, parent, false);
-            return new WeatherHolder(view);
+            return new WeatherHolder(LayoutInflater.from(getActivity()).inflate(R.layout.item_weather, parent, false));
         }
 
         @Override
         public void onBindViewHolder(WeatherHolder holder, int position) {
-            ListWeather dataWeather = mListWeathers.get(position);
+            ListWeather dataWeather = mWeatherList.get(position);
             holder.bindDataWeather(dataWeather);
         }
 
         @Override
         public int getItemCount() {
-            return mListWeathers.size();
+            return mWeatherList.size();
         }
     }
 }

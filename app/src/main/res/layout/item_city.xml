@@ -13,7 +13,6 @@
         android:paddingBottom="@dimen/card_padding">
 
         <ImageView
-            android:id="@+id/item_city_iv"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentLeft="true"
@@ -21,7 +20,7 @@
             android:src="@drawable/ic_city"/>
 
         <ImageButton
-            android:id="@+id/item_city_ib_delete"
+            android:id="@+id/item_city_delete"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
@@ -30,7 +29,7 @@
             android:src="@drawable/ic_delete"/>
 
         <TextView
-            android:id="@+id/item_city_tv"
+            android:id="@+id/item_city_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

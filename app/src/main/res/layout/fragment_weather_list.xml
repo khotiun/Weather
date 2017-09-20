@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageButton
-        android:id="@+id/city_ibtn_search_city"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:id="@+id/weather_search"
+        android:layout_width="@dimen/size_picture"
+        android:layout_height="@dimen/size_picture"
         android:layout_marginTop="7dp"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_alignTop="@+id/city_til"
+        android:layout_alignTop="@+id/weather_til"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:background="@color/accent"
         android:src="@drawable/ic_search"/>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/city_til"
+        android:id="@+id/weather_til"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/city_ibtn_search_city"
+        android:layout_toLeftOf="@id/weather_search"
         android:layout_marginTop="@dimen/standart_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin">
 
         <EditText
-            android:id="@+id/city_et_search"
+            android:id="@+id/weather_enter_city"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:hint="@string/enter_name_of_city"
@@ -36,13 +35,13 @@
     </android.support.design.widget.TextInputLayout>
 
     <RelativeLayout
-        android:id="@+id/city_rl"
+        android:id="@+id/weather_relative_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/city_til">
+        android:layout_below="@id/weather_til">
 
         <TextView
-            android:id="@+id/city_tv_name"
+            android:id="@+id/weather_city_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -51,23 +50,23 @@
             tools:text="Dnipro"/>
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/city_rv"
+            android:id="@+id/weather_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/city_tv_name"
+            android:layout_below="@id/weather_city_name"
             android:layout_marginTop="8dp">
         </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/city_coordinator_layout"
+        android:id="@+id/weather_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/city_fab"
+            android:id="@+id/weather_add_to_favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -78,7 +77,7 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <ProgressBar
-        android:id="@+id/city_pb"
+        android:id="@+id/weather_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"

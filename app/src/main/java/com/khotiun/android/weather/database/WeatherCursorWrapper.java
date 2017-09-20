@@ -10,14 +10,16 @@ import com.khotiun.android.weather.model.CityName;
  */
 
 public class WeatherCursorWrapper extends CursorWrapper {
+
     public WeatherCursorWrapper(Cursor cursor) {
         super(cursor);
     }
 
+    //for take city name
     public CityName getCityName() {
         String name = getString(getColumnIndex(WeatherDbSchema.WeatherTable.Cols.CITY));
-
         CityName cityName = new CityName(name);
+
         return cityName;
     }
 }
