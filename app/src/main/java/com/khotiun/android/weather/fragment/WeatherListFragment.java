@@ -27,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.khotiun.android.weather.R;
+import com.khotiun.android.weather.activity.MainActivity;
 import com.khotiun.android.weather.api.ApiService;
 import com.khotiun.android.weather.api.RetroClient;
 import com.khotiun.android.weather.model.CityName;
@@ -151,14 +152,15 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             isFaforiteCity = false;
         }
     }
+
     //to receive a response from the server
     public void getResponse() {
         if (mEnterCityView.getText().toString().equals("")) {
             mTextInputLayout.setError(getResources().getString(R.string.empty_field));
+
             return;
         }
         mProgressBar.setVisibility(View.VISIBLE);
-        checkingInternetConnection();
         hideKeyboard();
         ApiService api = RetroClient.getApiService();
         Call<WeatherData> call = api.getWeather(mEnterCityView.getText().toString(), Config.API_KEY);
@@ -171,6 +173,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
                 mWeatherData = response.body();
                 if (mWeatherData == null) {
                     mTextInputLayout.setError(getResources().getString(R.string.Incorrect_city_name));
+
                     return;
                 }
                 isFaforiteCity = false;
@@ -187,8 +190,30 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             public void onFailure(Call<WeatherData> call, Throwable t) {
                 Log.d(TAG, "onFailure");
                 mProgressBar.setVisibility(View.GONE);
+
+                if (!InternetConnection.checkConnection(getActivity().getApplicationContext())){
+                    checkingInternetConnection();
+                } else {
+                    onFailureDialog();
+                }
+
             }
         });
+    }
+    //dialog on failure server
+    private void onFailureDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.warning)
+                .setMessage(R.string.problems_connecting_to_the_server)
+                .setIcon(R.drawable.ic_disconect)
+                .setNegativeButton(getResources().getString(R.string.ok),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     //Hide keyboard
@@ -207,6 +232,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
             dialog = new AlertDialog.Builder(getActivity());
             dialog.setTitle(getString(R.string.can_not_connect_to_the_internet));
             dialog.setMessage(getString(R.string.retry));
+            dialog.setCancelable(false);
             dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -329,6 +355,7 @@ public class WeatherListFragment extends Fragment implements View.OnClickListene
 
             return resultTime;
         }
+
         //get the time in the format HH:mm
         private String convertTime(String oldDateString) {
             mOldTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

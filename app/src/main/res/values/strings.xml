@@ -9,7 +9,10 @@
     <string name="Incorrect_city_name">Incorrect city name</string>
     <string name="this_city_is_already_added_to_favorites">This city is already added to favorites</string>
     <string name="can_not_connect_to_the_internet">can not connect to the internet</string>
-    <string name="retry">Retry</string>
+    <string name="retry">Retry?</string>
     <string name="yes">Yes</string>
     <string name="exit">Exit</string>
+    <string name="ok">Ok</string>
+    <string name="warning">Warning</string>
+    <string name="problems_connecting_to_the_server">problems connecting to the server</string>
 </resources>
